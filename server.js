@@ -16,6 +16,29 @@ const app = express()
 dotenv.config()
 
 // db
+
+console.log(process.env.ORIGIN)
+
+const corsOptions = {
+  origin: process.env.ORIGIN,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  allowedHeaders: [
+    'Origin',
+    'X-Requested-With',
+    'Content-Type',
+    'Accept',
+    'Authorization'
+  ],
+  credentials: true,
+  optionsSuccessStatus: 200
+}
+
+app.use(cors(corsOptions))
+
+app.options('*', cors(corsOptions)) // preflight requests
+
+app.use(express.json({ limit: '100mb' }))
+
 mongoose
   .connect(process.env.DATABASE_URL, {
     useNewUrlParser: true,
@@ -25,28 +48,19 @@ mongoose
   .catch(err => console.log(`Error: ${err}`))
 // multer
 
-app.use(express.json({ limit: '100mb' }))
-
-console.log(process.env.ORIGIN)
-
-app.use(
-  cors({
-    origin: process.env.ORIGIN,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
-    credentials: true
-  })
-)
-
-app.options('*', cors()); // preflight requests
-
 app.use('/auth', authRoutes)
 app.use('/posts', postRoutes)
 app.use('/users', userRoutes)
 app.use('/reports', reportRoutes)
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack)
+  res.status(500).json({ error: 'Something broke!' })
+})
+
 app.listen(3000, () => {
   console.log('Now running on port 3000')
 })
 
-module.exports = app; // for vercel
+module.exports = app // for vercel
