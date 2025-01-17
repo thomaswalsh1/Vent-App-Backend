@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+      "target": "es6",
+      "module": "commonjs",
+      "checkJs": true, // Enable error checking for JS files
+      "allowJs": true  // Allow JavaScript files
+    },
+    "exclude": ["node_modules"]
+  }
