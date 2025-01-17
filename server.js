@@ -19,7 +19,7 @@ dotenv.config()
 console.log(process.env.ORIGIN)
 
 const corsOptions = {
-  origin: process.env.ORIGIN || 'https://vent-app-frontend.vercel.app',
+  origin: process.env.ORIGIN,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: [
     'Access-Control-Allow-Origin',
