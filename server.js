@@ -27,6 +27,7 @@ mongoose
 
 app.use(express.json({ limit: '100mb' }))
 
+console.log(process.env.ORIGIN)
 
 app.use(
   cors({
