@@ -18,21 +18,21 @@ dotenv.config()
 // db
 console.log(process.env.ORIGIN)
 
+const whitelist = [process.env.ORIGIN]; 
+
+const corsOptions = { 
+    origin: (origin, callback) => { 
+        if (!origin || whitelist.includes(origin)) { 
+            callback(null, true); 
+        } else { 
+            callback(new Error("Not allowed by CORS Dumbass")); 
+        } 
+    }, 
+    credentials: true, 
+}; 
+
 app.use(
-  cors({
-    origin: process.env.ORIGIN,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-    allowedHeaders: [
-      'Access-Control-Allow-Origin',
-      'Origin',
-      'X-Requested-With',
-      'Content-Type',
-      'Accept',
-      'Authorization'
-    ],
-    credentials: true,
-    optionsSuccessStatus: 200
-  })
+  cors(corsOptions)
 )
 
 app.use(express.json({ limit: '100mb' }))
