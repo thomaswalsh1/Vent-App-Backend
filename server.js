@@ -12,39 +12,35 @@ const reportRoutes = require('./routes/ReportRoutes.js')
 
 const app = express()
 
+// configure environment
+dotenv.config()
+
 // db
 mongoose
-  .connect('mongodb://localhost:27017/social-app', {
+  .connect(process.env.DATABASE_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true
   })
   .then(e => console.log('Connected to MongoDB'))
   .catch(err => console.log(`Error: ${err}`))
 
-// configure environment
-dotenv.config()
+
 
 // multer
 
 app.use(express.json({ limit: '100mb' }))
 
-app.use(function (req, res, next) {
-  res.header('Access-Control-Allow-Origin', '*')
-  res.header('Access-Control-Allow-Methods', 'GET, PUT, POST')
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept'
-  )
-  next()
-})
 
 app.use(
   cors({
     origin: process.env.ORIGIN,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
     credentials: true
   })
 )
+
+app.options('*', cors()); // preflight requests
 
 app.use('/auth', authRoutes)
 app.use('/posts', postRoutes)
