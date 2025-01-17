@@ -23,9 +23,6 @@ mongoose
   })
   .then(e => console.log('Connected to MongoDB'))
   .catch(err => console.log(`Error: ${err}`))
-
-
-
 // multer
 
 app.use(express.json({ limit: '100mb' }))
@@ -50,3 +47,5 @@ app.use('/reports', reportRoutes)
 app.listen(3000, () => {
   console.log('Now running on port 3000')
 })
+
+module.exports = app; // for vercel
