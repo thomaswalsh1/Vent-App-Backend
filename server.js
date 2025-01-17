@@ -20,7 +20,7 @@ dotenv.config()
 console.log(process.env.ORIGIN)
 
 const corsOptions = {
-  origin: 'https://vent-app-frontend.vercel.app',
+  origin: process.env.ORIGIN,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: [
     'Origin',
@@ -34,8 +34,6 @@ const corsOptions = {
 }
 
 app.use(cors(corsOptions))
-
-app.options('*', cors(corsOptions)) // preflight requests
 
 app.use(express.json({ limit: '100mb' }))
 
