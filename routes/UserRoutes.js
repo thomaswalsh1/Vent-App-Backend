@@ -20,7 +20,7 @@ const router = express.Router()
 const storage = multer.memoryStorage();
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // Limit file size to 5 MB
+  limits: { fileSize: 100 * 1024 * 1024 }, // Limit file size to 100 MB
 });
 
 // images if needed
@@ -34,6 +34,8 @@ router.get('/:id/notifications', getUserNotifications)
 router.patch('/:id/notifications/:notifId', readUserNotification)
 
 router.get('/:id/followers', getFollowers)
+router.get('/:id/following', getFollowing)
+
 router.post('/:id/followers', followUser)
 router.delete('/:id/followers', unfollowUser)
 

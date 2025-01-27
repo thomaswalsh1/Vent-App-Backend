@@ -43,8 +43,6 @@ app.use(express.json({ limit: '100mb' }))
 
 mongoose
   .connect(process.env.DATABASE_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
   })
   .then(e => console.log('Connected to MongoDB'))
   .catch(err => console.log(`Error: ${err}`))
@@ -55,10 +53,12 @@ app.use('/posts', postRoutes)
 app.use('/users', userRoutes)
 app.use('/reports', reportRoutes)
 
+
 // Error handling middleware
 app.use((err, req, res, next) => {
+  console.log(req.headers); // debug 431
   console.error(err.stack)
-  res.status(500).json({ error: 'Something broke!' })
+  next();
 })
 
 app.listen(3000, () => {

@@ -52,20 +52,18 @@ exports.getUser = async (req, res) => {
       viewable: viewable
     })
   } catch (err) {
-    console.error(err);
-    console.log("Error in getUser: " + err);
+    console.error(err)
+    console.log('Error in getUser: ' + err)
     res.status(500).json({ error: err.message })
   }
 }
 
 exports.searchUsers = async (req, res) => {
-
   // console.log("Made it to search Users");
   const search = req.query.search || ''
   const page = parseInt(req.query.page) || 1
   const limit = parseInt(req.query.limit) || 6
   const skip = (page - 1) * limit
-
 
   try {
     const users = await User.find({
@@ -88,10 +86,10 @@ exports.searchUsers = async (req, res) => {
     })
 
     const hasMore = skip + limit < totalCount
-    
-    res.status(200).json({users, hasMore})
+
+    res.status(200).json({ users, hasMore })
   } catch (error) {
-    console.log("Error in searchUsers: " + error);
+    console.log('Error in searchUsers: ' + error)
     res.status(500).json({ message: 'Failed to search posts', error })
   }
 }
@@ -140,19 +138,36 @@ exports.readUserNotification = async (req, res) => {
 
 // TODO: add pagination
 exports.getFollowers = async (req, res) => {
-  const { id } = req.params
-  const { page = 1, limit = 50 } = req.query
-
   try {
-    const followers = await Follower.find({ userId: id })
-      .skip((page - 1) * limit)
-      .limit(parseInt(limit))
-      .populate('followerId', 'username pfp')
+    // pagination
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 10
+    const skip = (page - 1) * limit
 
-    res.status(200).json(followers)
+    const relationships = await Follower.find({
+      userId: req.params.id
+    })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+
+    // const followers = await Promise.all(
+    //   relationships.map(async (relationship, index) => {
+    //     return await User.findById(relationship.followerId)
+    //   })
+    // )
+
+    const followers = relationships.map((relationship, index) => relationship.followerId)
+
+    const totalCount = await Follower.countDocuments({
+      userId: req.params.id
+    })
+
+    const hasMore = skip + limit < totalCount
+
+    res.status(200).json({ users: followers, hasMore })
   } catch (error) {
-    console.error('Error fetching followers:', error)
-    res.status(500).json({ message: 'Internal Server Error' })
+    res.status(500).json({ message: 'Failed to fetch followers', error })
   }
 }
 
@@ -167,8 +182,8 @@ exports.followUser = async (req, res) => {
 
     // check if following request is needed
     const user = await User.findById(userId)
-    
-    const isPrivate = user.private === true;
+
+    const isPrivate = user.private === true
 
     if (isPrivate) return handleRequestFollow(req, res)
 
@@ -273,13 +288,37 @@ exports.acceptAsFollower = async (req, res) => {
 
 exports.getFollowing = async (req, res) => {
   try {
-    const id = req.params.id
+    // pagination
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 10
+    const skip = (page - 1) * limit
 
-    const foundFollowing = await User.findById(id).then(user =>
-      user ? user.following : []
-    )
+    const relationships = await Follower.find({
+      followerId: req.params.id,
+      isRequest: false // looking for following, not who's requested
+    })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
 
-    res.status(200).json({ foundFollowing })
+    // const following = await Promise.all(
+    //   relationships.map(async (relationship, index) => {
+    //     return await User.findById(relationship.userId)
+    //   })
+    // ) // extract the users from the relationships
+
+    const following = relationships.map((relationship, index) => relationship.userId); // just the id, fetch for data inside the user component
+
+    const totalCount = await Follower.countDocuments(
+      {
+        followerId: req.params.id,
+        isRequest: false // looking for following, not who's requested
+      }
+    );
+
+    const hasMore = skip + limit < totalCount
+
+    res.status(200).json({ users: following, hasMore })
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch following', error })
   }
