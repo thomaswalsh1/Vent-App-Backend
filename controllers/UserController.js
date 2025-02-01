@@ -9,6 +9,8 @@ const jwt = require('jsonwebtoken')
 const VerifyFriends = require('../tools/VerifyFriends.js')
 const NotifyRequestFollow = require('./notifier/NotifyRequest.js')
 const VerifyFollower = require('../tools/VerifyFollower.js')
+const Confirmation = require('../models/Confirmation.js')
+const SendVerificationEmail = require('./emails/SendVerificationEmail.js')
 
 exports.updateUser = async (req, res) => {
   try {
@@ -136,6 +138,21 @@ exports.readUserNotification = async (req, res) => {
   }
 }
 
+exports.checkUnreadNotifications = async (req, res) => {
+  try {
+    const userId = VerifyId(req.headers.authorization)
+
+    const found = await Notification.findOne({
+      recipient: userId,
+      read: false
+    })
+
+    res.status(200).json({ unreadNotificationsFound: !!found })
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to read notification', error })
+  }
+}
+
 // TODO: add pagination
 exports.getFollowers = async (req, res) => {
   try {
@@ -157,7 +174,9 @@ exports.getFollowers = async (req, res) => {
     //   })
     // )
 
-    const followers = relationships.map((relationship, index) => relationship.followerId)
+    const followers = relationships.map(
+      (relationship, index) => relationship.followerId
+    )
 
     const totalCount = await Follower.countDocuments({
       userId: req.params.id
@@ -307,14 +326,14 @@ exports.getFollowing = async (req, res) => {
     //   })
     // ) // extract the users from the relationships
 
-    const following = relationships.map((relationship, index) => relationship.userId); // just the id, fetch for data inside the user component
+    const following = relationships.map(
+      (relationship, index) => relationship.userId
+    ) // just the id, fetch for data inside the user component
 
-    const totalCount = await Follower.countDocuments(
-      {
-        followerId: req.params.id,
-        isRequest: false // looking for following, not who's requested
-      }
-    );
+    const totalCount = await Follower.countDocuments({
+      followerId: req.params.id,
+      isRequest: false // looking for following, not who's requested
+    })
 
     const hasMore = skip + limit < totalCount
 
@@ -338,3 +357,6 @@ exports.checkFollowingStatus = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch following status', error })
   }
 }
+
+
+

@@ -10,7 +10,8 @@ const {
   checkFollowingStatus,
   readUserNotification,
   acceptAsFollower,
-  searchUsers
+  searchUsers,
+  checkUnreadNotifications,
 } = require('../controllers/UserController');
 const multer = require('multer');
 
@@ -32,6 +33,7 @@ router.get('/:id', getUser)
 
 router.get('/:id/notifications', getUserNotifications)
 router.patch('/:id/notifications/:notifId', readUserNotification)
+router.get('/:id/notifications/status', checkUnreadNotifications)
 
 router.get('/:id/followers', getFollowers)
 router.get('/:id/following', getFollowing)
@@ -47,6 +49,8 @@ router.get('/:id/following', getFollowing)
 
 // check if user is following
 router.get(`/:id/following/status`, checkFollowingStatus)
+
+
 
 
 module.exports = router
