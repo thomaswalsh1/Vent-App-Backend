@@ -43,7 +43,7 @@ app.use(cors(corsOptions))
 app.use(express.json({ limit: '100mb' }))
 
 mongoose
-  .connect(process.env.DATABASE_URL, {
+  .connect(process.env.MONGODB_URI, {
   })
   .then(e => console.log('Connected to MongoDB'))
   .catch(err => console.log(`Error: ${err}`))
