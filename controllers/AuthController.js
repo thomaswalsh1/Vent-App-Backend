@@ -145,7 +145,7 @@ exports.sendConfirmationEmail = async (req, res) => {
   } catch (error) {
     res
       .status(500)
-      .json({ message: 'Failed to send confirmation email', error })
+      .json({ message: 'Failed to send confirmation email', error: error.message })
   }
 }
 
