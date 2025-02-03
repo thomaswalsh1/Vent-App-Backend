@@ -17,9 +17,27 @@ const app = express()
 dotenv.config()
 
 // db
-console.log(process.env.ORIGIN)
 
-const corsOptions = {
+// const corsOptions = {
+//   origin: process.env.ORIGIN,
+//   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: [
+//     'Access-Control-Allow-Origin',
+//     'Origin',
+//     'X-Requested-With',
+//     'Content-Type',
+//     'Accept',
+//     'Authorization'
+//   ],
+//   credentials: true,
+//   optionsSuccessStatus: 200
+// }
+
+// // Handle preflight requests for all routes
+// app.options('*', cors(corsOptions))
+
+// Apply CORS middleware
+app.use(cors({
   origin: process.env.ORIGIN,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: [
@@ -30,15 +48,8 @@ const corsOptions = {
     'Accept',
     'Authorization'
   ],
-  credentials: true,
-  optionsSuccessStatus: 200
-}
-
-// Handle preflight requests for all routes
-app.options('*', cors(corsOptions))
-
-// Apply CORS middleware
-app.use(cors(corsOptions))
+  credentials: true
+}))
 
 app.use(express.json({ limit: '100mb' }))
 
