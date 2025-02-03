@@ -3,6 +3,7 @@ const multer = require('multer')
 const mongoose = require('mongoose')
 const cors = require('cors')
 const dotenv = require('dotenv')
+import http from 'http';
 
 // routes
 const authRoutes = require('./routes/AuthRoutes.js')
