@@ -4,7 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon run dev",
+    "start": "node server.js",
+    "dev": "nodemon run dev",
     "test": "echo \"Error: no test specified\" && exit 1",
     "seed:users": "node ./scripts/seedUsers.js",
     "seed:posts": "node ./scripts/seedPosts.js",
